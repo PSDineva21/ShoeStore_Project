@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Кошница - ShoeStore{% endblock %}
+
+{% block content %}
+<h1>Вашата кошница</h1>
+
+{% if cart_items %}
+<div class="d-flex flex-wrap gap-3">
+    <div style="flex: 2; min-width: 300px;">
+        {% for item in cart_items %}
+        <div class="card">
+            <div class="d-flex justify-between align-center">
+                <div class="d-flex align-center gap-2">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                        👟
+                    </div>
+                    <div>
+                        <h3>{{ item.product.name }}</h3>
+                        <p>Размер: {{ item.size }}</p>
+                        <p>Цвят: {{ item.product.color }}</p>
+                    </div>
+                </div>
+                
+                <div class="text-right">
+                    <div class="product-price">{{ item.subtotal }} лв.</div>
+                    <div style="color: #666;">{{ item.product.price }} лв. × {{ item.quantity }}</div>
+                    
+                    <form method="POST" action="{{ url_for('cart.update_cart_quantity', product_id=item.product.id, size=item.size) }}" 
+                          class="d-flex align-center gap-1 mt-1">
+                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" 
+                               class="quantity-input" style="width: 60px;">
+                        <button type="submit" class="btn">Обнови</button>
+                    </form>
+                    
+                    <a href="{{ url_for('cart.remove_from_cart', product_id=item.product.id, size=item.size) }}" 
+                       class="btn btn-danger mt-1">Премахни</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div style="flex: 1; min-width: 250px;">
+        <div class="cart-summary">
+            <h3>Обобщение на поръчката</h3>
+            
+            <div class="d-flex justify-between mt-2">
+                <span>Междинна сума:</span>
+                <span>{{ total }} лв.</span>
+            </div>
+            
+            <div class="d-flex justify-between mt-1">
+                <span>Доставка:</span>
+                <span>Безплатна</span>
+            </div>
+            
+            <hr>
+            
+            <div class="d-flex justify-between mt-1">
+                <strong>Общо:</strong>
+                <strong>{{ total }} лв.</strong>
+            </div>
+            
+            <a href="{{ url_for('cart.checkout') }}" class="btn w-100 mt-3">
+                Продължи към плащане
+            </a>
+            
+            <a href="{{ url_for('catalog.catalog') }}" class="btn btn-secondary w-100 mt-1">
+                Продължи пазаруването
+            </a>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card text-center">
+    <h3>Вашата кошница е празна</h3>
+    <p>Разгледайте нашите продукти и добавете нещо в кошницата.</p>
+    <a href="{{ url_for('catalog.catalog') }}" class="btn mt-2">Разгледай продукти</a>
+</div>
+{% endif %}
+{% endblock %}

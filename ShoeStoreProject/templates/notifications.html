@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Известия - ShoeStore{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-between align-center">
+    <h1>Моите известия</h1>
+    
+    {% if user_notifications %}
+    <a href="{{ url_for('cart.mark_all_notifications_read') }}" class="btn btn-secondary">
+        Маркирай всички като прочетени
+    </a>
+    {% endif %}
+</div>
+
+{% if notifications %}
+    <div class="card">
+        <div class="notification-list">
+            {% for notification in notifications %}
+            <div class="notification-item {% if not notification.is_read %}unread{% endif %}">
+                <div class="d-flex justify-between align-center">
+                    <div style="flex: 1;">
+                        <div class="notification-title">{{ notification.title }}</div>
+                        <div class="notification-message">{{ notification.message }}</div>
+                        <div class="notification-time">{{ notification.created_at.strftime('%d.%m.%Y %H:%M') }}</div>
+                    </div>
+                    
+                    {% if not notification.is_read %}
+                    <a href="{{ url_for('cart.mark_notification_read', notification_id=notification.id) }}" 
+                       class="btn" style="margin-left: 1rem;">
+                        Маркирай като прочетено
+                    </a>
+                    {% else %}
+                    <span style="color: #28a745; margin-left: 1rem;">✓ Прочетено</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    {% if notifications|length == 0 %}
+    <div class="card text-center">
+        <h3>Нямате известия</h3>
+        <p>Всичките ви известия са прочетени.</p>
+    </div>
+    {% endif %}
+{% else %}
+    <div class="card text-center">
+        <h3>Нямате известия</h3>
+        <p>Ще получавате известия за вашите поръчки и важни актуализации.</p>
+    </div>
+{% endif %}
+
+<div class="text-center mt-3">
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">← Назад към началната страница</a>
+</div>
+{% endblock %}

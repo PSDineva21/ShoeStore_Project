@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Начало - ShoeStore{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1>Добре дошли в ShoeStore!</h1>
+    <p class="mt-2">Най-добрият онлайн магазин за обувки</p>
+    
+    <div class="mt-4">
+        <a href="{{ url_for('catalog.catalog') }}" class="btn" style="font-size: 1.2rem; padding: 1rem 2rem;">
+            Разгледайте нашите продукти
+        </a>
+    </div>
+</div>
+
+<div class="mt-4">
+    <h2 class="text-center">Популярни категории</h2>
+    
+    <div class="product-grid">
+        <div class="card text-center">
+            <div style="font-size: 3rem; color: #667eea;">👟</div>
+            <h3>Спортни обувки</h3>
+            <p>Удобни обувки за спорт и активен начин на живот</p>
+        </div>
+        
+        <div class="card text-center">
+            <div style="font-size: 3rem; color: #667eea;">👞</div>
+            <h3>Официални обувки</h3>
+            <p>Елегантни обувки за офис и специални поводи</p>
+        </div>
+        
+        <div class="card text-center">
+            <div style="font-size: 3rem; color: #667eea;">🥾</div>
+            <h3>Ботуши</h3>
+            <p>Зимни ботуши за студеното време</p>
+        </div>
+        
+        <div class="card text-center">
+            <div style="font-size: 3rem; color: #667eea;">👡</div>
+            <h3>Летни обувки</h3>
+            <p>Лек и стилен избор за топлото време</p>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <h2 class="text-center">Защо да пазарувате при нас?</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem;">
+        <div class="text-center">
+            <div style="font-size: 2rem;">🚚</div>
+            <h3>Безплатна доставка</h3>
+            <p>За поръчки над 100 лв.</p>
+        </div>
+        
+        <div class="text-center">
+            <div style="font-size: 2rem;">↩️</div>
+            <h3>Лесно връщане</h3>
+            <p>В рамките на 30 дни</p>
+        </div>
+        
+        <div class="text-center">
+            <div style="font-size: 2rem;">🔒</div>
+            <h3>Сигурно плащане</h3>
+            <p>Защитени онлайн плащания</p>
+        </div>
+        
+        <div class="text-center">
+            <div style="font-size: 2rem;">📞</div>
+            <h3>Поддръжка</h3>
+            <p>Цялостна поддръжка 24/7</p>
+        </div>
+    </div>
+</div>
+
+
+<div class="mt-4">
+    <h2 class="text-center">Нови продукти</h2>
+    
+    <div class="product-grid">
+        {% set recent_products = catalog_service.products[:4] %}
+        {% for product in recent_products %}
+            <div class="product-card">
+                <div class="product-image">
+                    👟
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <p class="product-description">{{ product.description }}</p>
+                    
+                    <div class="product-details">
+                        <div class="product-price">{{ product.price }} лв.</div>
+                        <div class="product-stock {% if product.stock < 5 %}low{% endif %}">
+                            {% if product.stock > 0 %}
+                                Налични: {{ product.stock }}
+                            {% else %}
+                                Не е наличен
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <a href="{{ url_for('catalog.product_detail', product_id=product.id) }}" 
+                       class="btn w-100 mt-2 text-center">
+                        Виж детайли
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

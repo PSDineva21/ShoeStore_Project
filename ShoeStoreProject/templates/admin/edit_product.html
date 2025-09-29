@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if product %}Редактиране на продукт - ShoeStore{% else %}Добавяне на продукт - ShoeStore{% endif %}
+{% endblock %}
+
+{% block content %}
+<h1>{% if product %}Редактиране на продукт{% else %}Добавяне на нов продукт{% endif %}</h1>
+
+<div class="card">
+    <form method="POST">
+        <div class="form-group">
+            <label class="form-label" for="name">Име на продукта *</label>
+            <input type="text" class="form-control" id="name" name="name" required 
+                   value="{{ product.name if product }}" placeholder="Въведете име на продукта">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="description">Описание</label>
+            <textarea class="form-control" id="description" name="description" rows="3" 
+                      placeholder="Въведете описание на продукта">{{ product.description if product }}</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="color">Цвят *</label>
+            <input type="text" class="form-control" id="color" name="color" required 
+                   value="{{ product.color if product }}" placeholder="Въведете цвят">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="sizes">Размери *</label>
+            <input type="text" class="form-control" id="sizes" name="sizes" required 
+                   value="{{ product.sizes|join(', ') if product }}" 
+                   placeholder="Въведете размери, разделени със запетая (напр. 38, 39, 40)">
+            <small style="color: #666;">Въведете размерите, разделени със запетая</small>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="price">Цена (лв.) *</label>
+            <input type="number" step="0.01" class="form-control" id="price" name="price" required 
+                   value="{{ product.price if product }}" placeholder="0.00" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="stock">Наличност *</label>
+            <input type="number" class="form-control" id="stock" name="stock" required 
+                   value="{{ product.stock if product }}" placeholder="0" min="0">
+        </div>
+        
+        <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn">
+                {% if product %}Запази промените{% else %}Добави продукт{% endif %}
+            </button>
+            <a href="{{ url_for('admin.products') }}" class="btn btn-secondary">Отказ</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

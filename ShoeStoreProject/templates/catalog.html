@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Каталог - ShoeStore{% endblock %}
+
+{% block content %}
+<h1>Каталог с обувки</h1>
+
+<div class="card">
+    <form method="GET" class="d-flex justify-between align-center flex-wrap gap-2">
+        <div style="flex: 1; min-width: 200px;">
+            <input type="text" 
+                   name="search" 
+                   class="form-control" 
+                   placeholder="Търсете по име, цвят или описание..."
+                   value="{{ search_term }}">
+        </div>
+        
+        <div class="d-flex gap-2 flex-wrap">
+            <select name="sort_by" class="form-select">
+                <option value="name" {% if sort_by == 'name' %}selected{% endif %}>По име</option>
+                <option value="price" {% if sort_by == 'price' %}selected{% endif %}>По цена</option>
+                <option value="stock" {% if sort_by == 'stock' %}selected{% endif %}>По наличност</option>
+            </select>
+            
+            <select name="sort_order" class="form-select">
+                <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Възходящо</option>
+                <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Низходящо</option>
+            </select>
+            
+            <button type="submit" class="btn">Търси</button>
+            
+            {% if search_term %}
+                <a href="{{ url_for('catalog.catalog') }}" class="btn btn-danger">Изчисти</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+{% if products %}
+    <div class="product-grid">
+        {% for product in products %}
+            <div class="product-card">
+                <div class="product-image">
+                    👟
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <p class="product-description">{{ product.description }}</p>
+                    
+                    <div class="product-details">
+                        <div class="product-price">{{ product.price }} лв.</div>
+                        <div class="product-stock {% if product.stock < 5 %}low{% endif %} {% if product.stock == 0 %}out{% endif %}">
+                            {% if product.stock > 0 %}
+                                Налични: {{ product.stock }}
+                            {% else %}
+                                Не е наличен
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-2">
+                        <strong>Цвят:</strong> {{ product.color }}<br>
+                        <strong>Размери:</strong> {{ product.sizes|join(', ') }}
+                    </div>
+                    
+                    <a href="{{ url_for('catalog.product_detail', product_id=product.id) }}" 
+                       class="btn w-100 mt-2 text-center">
+                        Виж детайли
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card text-center mt-4">
+        <h3>Няма намерени продукти</h3>
+        <p>Опитайте с друга ключова дума или изчистете филтрите.</p>
+        <a href="{{ url_for('catalog.catalog') }}" class="btn mt-2">Изчисти филтри</a>
+    </div>
+{% endif %}
+{% endblock %}

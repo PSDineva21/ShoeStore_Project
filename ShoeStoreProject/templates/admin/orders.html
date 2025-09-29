@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Управление на поръчки - ShoeStore{% endblock %}
+
+{% block content %}
+<h1>Управление на поръчки</h1>
+
+{% if orders %}
+<div class="card">
+    <div class="table">
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Потребител</th>
+                    <th>Дата</th>
+                    <th>Продукти</th>
+                    <th>Обща сума</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>#{{ order.id }}</td>
+                    <td>
+                        {% set user = auth_service.get_user_by_id(order.user_id) %}
+                        {% if user %}
+                            {{ user.email }}
+                        {% else %}
+                            Потребител №{{ order.user_id }}
+                        {% endif %}
+                    </td>
+                    <td>{{ order.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                    <td>
+                        {{ order.items|length }} продукт(а)
+                        <br>
+                        <small style="color: #666;">
+                            {% for item in order.items[:2] %}
+                                {% set product = catalog_service.get_product_by_id(item.product_id) %}
+                                {% if product %}
+                                    {{ product.name }}{% if not loop.last %}, {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if order.items|length > 2 %}...{% endif %}
+                        </small>
+                    </td>
+                    <td>{{ order.total }} лв.</td>
+                    <td>
+                        <span class="order-status 
+                            {% if order.status == 'Обработва се' %}status-processing
+                            {% elif order.status == 'Потвърдена' %}status-confirmed
+                            {% elif order.status == 'Изпратена' %}status-shipped
+                            {% elif order.status == 'Доставена' %}status-delivered
+                            {% elif order.status == 'Отказана' %}status-cancelled
+                            {% endif %}">
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <form method="POST" action="{{ url_for('admin.update_order_status', order_id=order.id) }}" 
+                              class="d-flex gap-1">
+                            <select name="status" class="form-select" style="width: 150px;">
+                                <option value="Обработва се" {% if order.status == 'Обработва се' %}selected{% endif %}>Обработва се</option>
+                                <option value="Потвърдена" {% if order.status == 'Потвърдена' %}selected{% endif %}>Потвърдена</option>
+                                <option value="Изпратена" {% if order.status == 'Изпратена' %}selected{% endif %}>Изпратена</option>
+                                <option value="Доставена" {% if order.status == 'Доставена' %}selected{% endif %}>Доставена</option>
+                                <option value="Отказана" {% if order.status == 'Отказана' %}selected{% endif %}>Отказана</option>
+                            </select>
+                            <button type="submit" class="btn">Запази</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="card text-center">
+    <h3>Все още няма поръчки</h3>
+    <p>Когато потребители направят поръчки, те ще се появят тук.</p>
+</div>
+{% endif %}
+
+<div class="text-center mt-3">
+    <a href="{{ url_for('admin.products') }}" class="btn btn-secondary">Управление на продукти</a>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">← Назад към сайта</a>
+</div>
+{% endblock %}

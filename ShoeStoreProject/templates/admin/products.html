@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Управление на продукти - ShoeStore{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-between align-center">
+    <h1>Управление на продукти</h1>
+    <a href="{{ url_for('admin.add_product') }}" class="btn">Добави нов продукт</a>
+</div>
+
+{% if products %}
+<div class="card">
+    <div class="table">
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Име</th>
+                    <th>Цвят</th>
+                    <th>Размери</th>
+                    <th>Цена</th>
+                    <th>Наличност</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.id }}</td>
+                    <td>
+                        <strong>{{ product.name }}</strong>
+                        <br>
+                        <small style="color: #666;">{{ product.description[:50] }}{% if product.description|length > 50 %}...{% endif %}</small>
+                    </td>
+                    <td>{{ product.color }}</td>
+                    <td>{{ product.sizes|join(', ') }}</td>
+                    <td>{{ product.price }} лв.</td>
+                    <td>
+                        <span class="product-stock {% if product.stock < 5 %}low{% endif %}">
+                            {{ product.stock }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a href="{{ url_for('admin.edit_product', product_id=product.id) }}" 
+                               class="btn">Редактирай</a>
+                            <a href="{{ url_for('admin.delete_product', product_id=product.id) }}" 
+                               class="btn btn-danger" 
+                               onclick="return confirm('Сигурни ли сте, че искате да изтриете този продукт?')">
+                                Изтрий
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="card text-center">
+    <h3>Все още няма продукти</h3>
+    <p>Добавете първия продукт в магазина.</p>
+    <a href="{{ url_for('admin.add_product') }}" class="btn mt-2">Добави продукт</a>
+</div>
+{% endif %}
+
+<div class="text-center mt-3">
+    <a href="{{ url_for('admin.view_orders') }}" class="btn btn-secondary">Управление на поръчки</a>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">← Назад към сайта</a>
+</div>
+{% endblock %}

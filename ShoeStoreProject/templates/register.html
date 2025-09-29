@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация - ShoeStore{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="card">
+        <h2 class="text-center">Създаване на акаунт</h2>
+        
+        <form method="POST" class="mt-3">
+            <div class="form-group">
+                <label class="form-label" for="email">Имейл адрес</label>
+                <input type="email" class="form-control" id="email" name="email" required 
+                       placeholder="Въведете вашия имейл">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="password">Парола</label>
+                <input type="password" class="form-control" id="password" name="password" required 
+                       placeholder="Въведете парола">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="confirm_password">Потвърдете паролата</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required 
+                       placeholder="Потвърдете паролата">
+            </div>
+            
+            <button type="submit" class="btn w-100 mt-3">Регистрирай се</button>
+        </form>
+        
+        <div class="text-center mt-3">
+            <p>Вече имате акаунт? <a href="{{ url_for('auth.login') }}">Влезте тук</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

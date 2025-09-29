@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Магазин за обувки{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="nav-logo">ShoeStore</a>
+
+            <div class="nav-menu">
+                <a href="{{ url_for('index') }}" class="nav-link">Начало</a>
+                <a href="{{ url_for('catalog.catalog') }}" class="nav-link">Каталог</a>
+
+                {% if current_user %}
+                    <a href="{{ url_for('cart.view_cart') }}" class="nav-link">Кошница</a>
+                    <a href="{{ url_for('cart.view_orders') }}" class="nav-link">Моите поръчки</a>
+
+
+                    <div class="notification-container">
+                        <button class="notification-bell" onclick="toggleNotifications()">
+                            🔔
+                            {% if unread_notifications_count > 0 %}
+                                <span class="notification-badge">{{ unread_notifications_count }}</span>
+                            {% endif %}
+                        </button>
+
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="notification-header">
+                                <h3>Известия</h3>
+                                <a href="{{ url_for('cart.view_notifications') }}" class="view-all-link">Виж всички</a>
+                            </div>
+
+                            {% if user_notifications %}
+                                <ul class="notification-list">
+                                    {% for notification in user_notifications %}
+                                        <li class="notification-item {% if not notification.is_read %}unread{% endif %}"
+                                            onclick="window.location.href='{{ url_for('cart.mark_notification_read', notification_id=notification.id) }}'">
+                                            <div class="notification-title">{{ notification.title }}</div>
+                                            <div class="notification-message">{{ notification.message }}</div>
+                                            <div class="notification-time">{{ notification.created_at.strftime('%d.%m.%Y %H:%M') }}</div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                                <div class="notification-actions">
+                                    <a href="{{ url_for('cart.mark_all_notifications_read') }}" class="mark-all-read">Маркирай всички като прочетени</a>
+                                </div>
+                            {% else %}
+                                <div class="no-notifications">
+                                    Нямате нови известия
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin.products') }}" class="nav-link admin-link">Админ</a>
+                    {% endif %}
+
+                    <div class="user-menu">
+                        <span class="user-email">{{ current_user.email }}</span>
+                        <a href="{{ url_for('auth.logout') }}" class="nav-link logout-btn">Изход</a>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="nav-link">Вход</a>
+                    <a href="{{ url_for('auth.register') }}" class="nav-link">Регистрация</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+
+    <main class="main-content">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 ShoeStore - Магазин за обувки. Всички права запазени.</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('notificationDropdown');
+            const bell = document.querySelector('.notification-bell');
+
+            if (!bell.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

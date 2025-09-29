@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - ShoeStore{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap gap-3">
+    <div class="product-detail-image">
+        👟
+    </div>
+
+    <div style="flex: 1; min-width: 300px;">
+        <div class="card">
+            <h1>{{ product.name }}</h1>
+            <p class="product-description">{{ product.description }}</p>
+            
+            <div class="product-details">
+                <div class="product-price">{{ product.price }} лв.</div>
+                <div class="product-stock {% if product.stock < 5 %}low{% endif %} {% if product.stock == 0 %}out{% endif %}">
+                    {% if product.stock > 0 %}
+                        Налични: {{ product.stock }}
+                    {% else %}
+                        Не е наличен
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <strong>Цвят:</strong> {{ product.color }}
+            </div>
+            
+            {% if product.stock > 0 %}
+            <form method="POST" action="{{ url_for('cart.add_to_cart', product_id=product.id) }}">
+
+                <div class="form-group mt-3">
+                    <label class="form-label"><strong>Размер:</strong></label>
+                    <div class="size-options">
+                        {% for size in product.sizes %}
+                            <label class="size-option">
+                                <input type="radio" name="size" value="{{ size }}" required 
+                                       {% if loop.first %}checked{% endif %}>
+                                {{ size }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><strong>Количество:</strong></label>
+                    <div class="quantity-selector">
+                        <button type="button" class="quantity-btn" onclick="decreaseQuantity()">-</button>
+                        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" 
+                               class="quantity-input" id="quantityInput">
+                        <button type="button" class="quantity-btn" onclick="increaseQuantity()">+</button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn w-100 mt-3">
+                    Добави в кошницата
+                </button>
+            </form>
+            {% else %}
+            <div class="mt-3">
+                <button class="btn btn-secondary w-100" disabled>Продуктът не е наличен</button>
+            </div>
+            {% endif %}
+            
+            <div class="mt-3">
+                <a href="{{ url_for('catalog.catalog') }}" class="btn btn-secondary w-100">
+                    ← Назад към каталога
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function increaseQuantity() {
+        const input = document.getElementById('quantityInput');
+        const max = parseInt(input.max);
+        if (parseInt(input.value) < max) {
+            input.value = parseInt(input.value) + 1;
+        }
+    }
+    
+    function decreaseQuantity() {
+        const input = document.getElementById('quantityInput');
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+    
+
+    document.querySelectorAll('.size-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.size-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            this.querySelector('input').checked = true;
+        });
+    });
+</script>
+{% endblock %}
