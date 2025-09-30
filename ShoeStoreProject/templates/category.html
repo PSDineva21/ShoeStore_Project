@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}{{ catalog_service.get_category_name(category) }} - ShoeStore{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-between align-center">
+    <h1>{{ catalog_service.get_category_name(category) }}</h1>
+    
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('catalog.category_view', category_name=category, gender='men') }}" 
+           class="btn {% if gender == 'men' %}btn-success{% endif %}">Мъжки</a>
+        <a href="{{ url_for('catalog.category_view', category_name=category, gender='women') }}" 
+           class="btn {% if gender == 'women' %}btn-success{% endif %}">Дамски</a>
+        <a href="{{ url_for('catalog.category_view', category_name=category) }}" 
+           class="btn {% if not gender %}btn-success{% endif %}">Всички</a>
+    </div>
+</div>
+
+{% if gender %}
+    <p class="mt-2">Показване на {{ catalog_service.get_gender_name(gender) }} {{ catalog_service.get_category_name(category)|lower }}</p>
+{% endif %}
+
+{% if products %}
+    <div class="product-grid mt-3">
+        {% for product in products %}
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="{{ product.image_url }}"
+                         alt="{{ product.name }}"
+                         loading="lazy"
+                         onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNjY3ZWVhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+8J+NnyA8L3RleHQ+PHRleHQgeD0iNTAlIiB5PSI2NSUiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj57eyBwcm9kdWN0Lm5hbWUgfX08L3RleHQ+PC9zdmc+'">
+                </div>
+                <div class="product-info">
+                    <div class="d-flex justify-between align-center">
+                        <span style="color: #666; font-size: 0.9rem;">
+                            {{ catalog_service.get_gender_name(product.gender) }}
+                        </span>
+                    </div>
+                    
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <p class="product-description">{{ product.description }}</p>
+                    
+                    <div class="product-details">
+                        <div class="product-price">{{ product.price }} лв.</div>
+                        <div class="product-stock {% if product.stock < 5 %}low{% endif %}">
+                            {% if product.stock > 0 %}
+                                Налични: {{ product.stock }}
+                            {% else %}
+                                Не е наличен
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-2">
+                        <strong>Цвят:</strong> {{ product.color }}<br>
+                        <strong>Размери:</strong> {{ product.sizes|join(', ') }}
+                    </div>
+                    
+                    <a href="{{ url_for('catalog.product_detail', product_id=product.id) }}" 
+                       class="btn w-100 mt-2 text-center">
+                        Виж детайли
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card text-center mt-4">
+        <h3>Няма продукти в тази категория</h3>
+        <p>Моля, изберете друга категория или пол.</p>
+        <a href="{{ url_for('catalog.catalog') }}" class="btn mt-2">Към всички продукти</a>
+    </div>
+{% endif %}
+
+<div class="text-center mt-4">
+    <a href="{{ url_for('catalog.catalog') }}" class="btn btn-secondary">← Назад към всички продукти</a>
+</div>
+{% endblock %}

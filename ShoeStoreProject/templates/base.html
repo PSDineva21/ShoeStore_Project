@@ -15,6 +15,7 @@
             <div class="nav-menu">
                 <a href="{{ url_for('index') }}" class="nav-link">Начало</a>
                 <a href="{{ url_for('catalog.catalog') }}" class="nav-link">Каталог</a>
+                <a href="{{ url_for('about') }}" class="nav-link">За нас</a>
 
                 {% if current_user %}
                     <a href="{{ url_for('cart.view_cart') }}" class="nav-link">Кошница</a>

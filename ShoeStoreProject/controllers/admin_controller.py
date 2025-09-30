@@ -40,15 +40,30 @@ def products():
 @admin_bp.route('/products/add', methods=['GET', 'POST'])
 @admin_required
 def add_product():
+    from services.catalog_service import catalog_service
+
     if request.method == 'POST':
         name = request.form['name']
         description = request.form['description']
         color = request.form['color']
         sizes = [int(s.strip()) for s in request.form['sizes'].split(',')]
+        category = request.form['category']
+        gender = request.form['gender']
+        image_url = request.form.get('image_url', None)
         price = float(request.form['price'])
         stock = int(request.form['stock'])
 
-        product = catalog_service.add_product(name, description, color, sizes, price, stock)
+        product = catalog_service.add_product(
+            name=name,
+            description=description,
+            color=color,
+            sizes=sizes,
+            price=price,
+            stock=stock,
+            category=category,
+            gender=gender,
+            image_url=image_url
+        )
         flash(f'Продукт "{name}" е добавен успешно!', 'success')
         return redirect(url_for('admin.products'))
 
@@ -58,6 +73,8 @@ def add_product():
 @admin_bp.route('/products/edit/<int:product_id>', methods=['GET', 'POST'])
 @admin_required
 def edit_product(product_id):
+    from services.catalog_service import catalog_service
+
     product = catalog_service.get_product_by_id(product_id)
     if not product:
         flash('Продуктът не е намерен.', 'error')
@@ -68,16 +85,24 @@ def edit_product(product_id):
         description = request.form['description']
         color = request.form['color']
         sizes = [int(s.strip()) for s in request.form['sizes'].split(',')]
+        category = request.form['category']
+        gender = request.form['gender']
+        image_url = request.form.get('image_url', None)
         price = float(request.form['price'])
         stock = int(request.form['stock'])
 
-        success = catalog_service.update_product(product_id,
-                                                 name=name,
-                                                 description=description,
-                                                 color=color,
-                                                 sizes=sizes,
-                                                 price=price,
-                                                 stock=stock)
+        success = catalog_service.update_product(
+            product_id,
+            name=name,
+            description=description,
+            color=color,
+            sizes=sizes,
+            category=category,
+            gender=gender,
+            image_url=image_url,
+            price=price,
+            stock=stock
+        )
 
         if success:
             flash(f'Продукт "{name}" е обновен успешно!', 'success')
@@ -87,7 +112,6 @@ def edit_product(product_id):
         return redirect(url_for('admin.products'))
 
     return render_template('admin/edit_product.html', product=product)
-
 
 @admin_bp.route('/products/delete/<int:product_id>')
 @admin_required
@@ -104,6 +128,8 @@ def delete_product(product_id):
 @admin_bp.route('/orders')
 @admin_required
 def view_orders():
+    from services.order_service import order_service
+
     orders = order_service.get_all_orders()
     return render_template('admin/orders.html', orders=orders)
 

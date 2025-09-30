@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}За нас - ShoeStore{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1>За нас</h1>
+    <p class="mt-2 subtitle">Вашият доверен партньор за качествени обувки</p>
+</div>
+
+<div class="card mt-4 purple-hero">
+    <h2 class="text-center">Нашата история</h2>
+    <p class="text-center mt-2">
+        ShoeStore е основан през 2020 година с мисия да предостави на българския пазар
+        качествени и модерни обувки на достъпни цени. За краткото си съществуване
+        успяхме да спечелим доверието на хиляди клиенти в цялата страна.
+    </p>
+</div>
+
+<div class="card mt-4">
+    <h2 class="text-center purple-text">Контакти</h2>
+
+    <div class="contact-grid">
+        <div class="contact-item purple-contact">
+            <div class="contact-icon purple-icon">📞</div>
+            <h3 class="purple-text">Телефон</h3>
+            <p class="contact-info">+359 2 123 4567</p>
+            <p class="contact-hours">Понеделник - Петък: 09:00 - 18:00</p>
+        </div>
+
+        <div class="contact-item purple-contact">
+            <div class="contact-icon purple-icon">✉️</div>
+            <h3 class="purple-text">Имейл</h3>
+            <p class="contact-info">info@shoestore.bg</p>
+            <p class="contact-hours">Отговаряме в рамките на 24 часа</p>
+        </div>
+
+        <div class="contact-item purple-contact">
+            <div class="contact-icon purple-icon">💬</div>
+            <h3 class="purple-text">Чат поддръжка</h3>
+            <p class="contact-hours">Понеделник - Неделя: 08:00 - 22:00</p>
+            <p class="contact-hours">Натиснете бутона в долния десен ъгъл</p>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <h2 class="text-center purple-text">Често задавани въпроси</h2>
+
+    <div class="faq-container">
+        <div class="faq-item">
+            <div class="faq-question purple-faq">
+                <h4>❓ Как мога да направя поръчка?</h4>
+                <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+                <p>Можете да направите поръчка директно от нашия уебсайт. Добавете желаните продукти в кошницата и следвайте стъпките за плащане.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question purple-faq">
+                <h4>❓ Каква е политиката за връщане?</h4>
+                <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+                <p>Приемаме връщания в рамките на 30 дни от получаването на поръчката. Продуктите трябва да са в оригинално състояние с етикети.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question purple-faq">
+                <h4>❓ Имате ли физически магазини?</h4>
+                <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+                <p>В момента работим само онлайн, което ни позволява да предлагаме по-добри цени и по-широк асортимент.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question purple-faq">
+                <h4>❓ Колко време отнема доставката?</h4>
+                <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+                <p>Доставката в София е 1-2 работни дни, за страната - 2-4 работни дни. При поръчки над 100 лв. доставката е безплатна.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4 purple-hero">
+    <h2 class="text-center">Защо да изберете ShoeStore?</h2>
+
+    <div class="benefits-grid">
+        <div class="benefit-item">
+            <div class="benefit-icon purple-icon">⭐</div>
+            <h4>Качество</h4>
+            <p>Работим само с проверени доставчици и марки</p>
+        </div>
+
+        <div class="benefit-item">
+            <div class="benefit-icon purple-icon">🚚</div>
+            <h4>Бърза доставка</h4>
+            <p>Доставяме навреме във всички краища на страната</p>
+        </div>
+
+        <div class="benefit-item">
+            <div class="benefit-icon purple-icon">💳</div>
+            <h4>Сигурни плащания</h4>
+            <p>Различни методи на плащане с пълна сигурност</p>
+        </div>
+
+        <div class="benefit-item">
+            <div class="benefit-icon purple-icon">👥</div>
+            <h4>Поддръжка</h4>
+            <p>Екип от специалисти на ваше разположение</p>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const faqItems = document.querySelectorAll('.faq-item');
+
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+
+            question.addEventListener('click', function() {
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+                item.classList.toggle('active');
+            });
+        });
+    });
+</script>
+{% endblock %}

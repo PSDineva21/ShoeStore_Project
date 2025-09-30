@@ -34,7 +34,35 @@
                    placeholder="Въведете размери, разделени със запетая (напр. 38, 39, 40)">
             <small style="color: #666;">Въведете размерите, разделени със запетая</small>
         </div>
-        
+
+        <div class="form-group">
+            <label class="form-label" for="category">Категория *</label>
+            <select class="form-control" id="category" name="category" required>
+                <option value="">Изберете категория</option>
+                <option value="sports" {% if product and product.category == 'sports' %}selected{% endif %}>Спортни обувки</option>
+                <option value="formal" {% if product and product.category == 'formal' %}selected{% endif %}>Официални обувки</option>
+                <option value="boots" {% if product and product.category == 'boots' %}selected{% endif %}>Ботуши</option>
+                <option value="sandals" {% if product and product.category == 'sandals' %}selected{% endif %}>Летни обувки</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="gender">Пол *</label>
+            <select class="form-control" id="gender" name="gender" required>
+                <option value="">Изберете пол</option>
+                <option value="men" {% if product and product.gender == 'men' %}selected{% endif %}>Мъжки</option>
+                <option value="women" {% if product and product.gender == 'women' %}selected{% endif %}>Дамски</option>
+                <option value="unisex" {% if product and product.gender == 'unisex' %}selected{% endif %}>Унисекс</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="image_url">URL на снимка</label>
+            <input type="text" class="form-control" id="image_url" name="image_url"
+                   value="{{ product.image_url if product and product.image_url }}"
+                   placeholder="Въведете URL на снимка (по избор)">
+        </div>
+
         <div class="form-group">
             <label class="form-label" for="price">Цена (лв.) *</label>
             <input type="number" step="0.01" class="form-control" id="price" name="price" required 

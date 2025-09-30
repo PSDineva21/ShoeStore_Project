@@ -7,22 +7,25 @@ from controllers.admin_controller import admin_bp
 app = Flask(__name__)
 app.secret_key = 'shoestore-secret-key-2024'
 
-
 app.register_blueprint(auth_bp)
 app.register_blueprint(catalog_bp)
 app.register_blueprint(cart_bp)
 app.register_blueprint(admin_bp)
 
-
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 
 @app.context_processor
 def inject_user():
     from services.auth_service import auth_service
     from services.notification_service import notification_service
+    from services.catalog_service import catalog_service
 
     user = None
     notifications = []
@@ -37,9 +40,10 @@ def inject_user():
     return dict(
         current_user=user,
         user_notifications=notifications[:5],
-        unread_notifications_count=unread_count
+        unread_notifications_count=unread_count,
+        catalog_service=catalog_service,
+        auth_service=auth_service
     )
-
 
 if __name__ == '__main__':
     app.run(debug=True)

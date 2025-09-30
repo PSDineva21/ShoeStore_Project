@@ -1,16 +1,13 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from services.cart_service import cart_service
-from services.catalog_service import catalog_service
-from services.order_service import order_service
-from services.notification_service import notification_service
-from services.auth_service import auth_service
-
 
 cart_bp = Blueprint('cart', __name__)
 
 
 @cart_bp.route('/cart')
 def view_cart():
+    from services.cart_service import cart_service
+    from services.catalog_service import catalog_service
+
     if 'user_id' not in session:
         flash('Моля, влезте в акаунта си за да видите кошницата.', 'warning')
         return redirect(url_for('auth.login'))
@@ -38,6 +35,9 @@ def view_cart():
 
 @cart_bp.route('/cart/add/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):
+    from services.cart_service import cart_service
+    from services.catalog_service import catalog_service
+
     if 'user_id' not in session:
         flash('Моля, влезте в акаунта си.', 'warning')
         return redirect(url_for('auth.login'))
@@ -51,7 +51,17 @@ def add_to_cart(product_id):
         flash('Продуктът не е намерен.', 'error')
         return redirect(url_for('catalog.catalog'))
 
-    if size not in product.sizes:
+    # Проверка за размер - преобразуване в int и валидация
+    try:
+        if size is None:
+            flash('Моля, изберете размер.', 'error')
+            return redirect(url_for('catalog.product_detail', product_id=product_id))
+
+        size_int = int(size)
+        if size_int not in product.sizes:
+            flash('Невалиден размер. Моля, изберете от наличните размери.', 'error')
+            return redirect(url_for('catalog.product_detail', product_id=product_id))
+    except (ValueError, TypeError):
         flash('Невалиден размер.', 'error')
         return redirect(url_for('catalog.product_detail', product_id=product_id))
 
@@ -59,25 +69,41 @@ def add_to_cart(product_id):
         flash('Недостатъчна наличност.', 'error')
         return redirect(url_for('catalog.product_detail', product_id=product_id))
 
-    cart_service.add_to_cart(user_id, product_id, size, quantity)
-    flash('Продуктът е добавен в кошницата!', 'success')
+    # Добавяне в кошницата
+    success = cart_service.add_to_cart(user_id, product_id, size_int, quantity)
+
+    if success:
+        flash('Продуктът е добавен в кошницата!', 'success')
+    else:
+        flash('Грешка при добавяне в кошницата.', 'error')
+
     return redirect(url_for('catalog.product_detail', product_id=product_id))
 
 
 @cart_bp.route('/cart/remove/<int:product_id>/<size>')
 def remove_from_cart(product_id, size):
+    from services.cart_service import cart_service
+
     if 'user_id' not in session:
         flash('Моля, влезте в акаунта си.', 'warning')
         return redirect(url_for('auth.login'))
 
     user_id = session['user_id']
-    cart_service.remove_from_cart(user_id, product_id, size)
-    flash('Продуктът е премахнат от кошницата.', 'success')
+    success = cart_service.remove_from_cart(user_id, product_id, size)
+
+    if success:
+        flash('Продуктът е премахнат от кошницата.', 'success')
+    else:
+        flash('Продуктът не е намерен в кошницата.', 'error')
+
     return redirect(url_for('cart.view_cart'))
 
 
 @cart_bp.route('/cart/update/<int:product_id>/<size>', methods=['POST'])
 def update_cart_quantity(product_id, size):
+    from services.cart_service import cart_service
+    from services.catalog_service import catalog_service
+
     if 'user_id' not in session:
         flash('Моля, влезте в акаунта си.', 'warning')
         return redirect(url_for('auth.login'))
@@ -90,13 +116,24 @@ def update_cart_quantity(product_id, size):
         flash('Недостатъчна наличност.', 'error')
         return redirect(url_for('cart.view_cart'))
 
-    cart_service.update_quantity(user_id, product_id, size, quantity)
-    flash('Количеството е обновено.', 'success')
+    success = cart_service.update_quantity(user_id, product_id, size, quantity)
+
+    if success:
+        flash('Количеството е обновено.', 'success')
+    else:
+        flash('Грешка при обновяване на количеството.', 'error')
+
     return redirect(url_for('cart.view_cart'))
 
 
 @cart_bp.route('/checkout', methods=['GET', 'POST'])
 def checkout():
+    from services.cart_service import cart_service
+    from services.catalog_service import catalog_service
+    from services.order_service import order_service
+    from services.notification_service import notification_service
+    from services.auth_service import auth_service
+
     if 'user_id' not in session:
         flash('Моля, влезте в акаунта си за да направите поръчка.', 'warning')
         return redirect(url_for('auth.login'))
@@ -130,6 +167,8 @@ def checkout():
 
 @cart_bp.route('/orders')
 def view_orders():
+    from services.order_service import order_service
+
     if 'user_id' not in session:
         flash('Моля, влезте в акаунта си за да видите поръчките си.', 'warning')
         return redirect(url_for('auth.login'))
@@ -142,6 +181,8 @@ def view_orders():
 
 @cart_bp.route('/notifications')
 def view_notifications():
+    from services.notification_service import notification_service
+
     if 'user_id' not in session:
         flash('Моля, влезте в акаунта си.', 'warning')
         return redirect(url_for('auth.login'))
@@ -154,17 +195,26 @@ def view_notifications():
 
 @cart_bp.route('/notifications/mark_read/<int:notification_id>')
 def mark_notification_read(notification_id):
+    from services.notification_service import notification_service
+
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
 
     user_id = session['user_id']
-    notification_service.mark_as_read(notification_id, user_id)
-    flash('Нотификацията е маркирана като прочетена.', 'success')
+    success = notification_service.mark_as_read(notification_id, user_id)
+
+    if success:
+        flash('Нотификацията е маркирана като прочетена.', 'success')
+    else:
+        flash('Грешка при маркиране на нотификацията.', 'error')
+
     return redirect(url_for('cart.view_notifications'))
 
 
 @cart_bp.route('/notifications/mark_all_read')
 def mark_all_notifications_read():
+    from services.notification_service import notification_service
+
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
 
